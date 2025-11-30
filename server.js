@@ -32,17 +32,17 @@ app.get("/", (req, res) => {
   res.render("login");
 });
 
-// Login pakai tabel petugas
+/// LOGIN pakai tabel petugas (password sudah hash bcrypt)
 app.post("/login", (req, res) => {
-    const { Username, password } = req.body;
+    const { username, password } = req.body;
   
-    if (!Username || !password) {
+    if (!username || !password) {
       return res.redirect("/");
     }
   
     db.query(
       "SELECT * FROM petugas WHERE Username = ?",
-      [Username],
+      [username],
       (err, rows) => {
         if (err) {
           console.error("DB error during login:", err);
@@ -50,37 +50,39 @@ app.post("/login", (req, res) => {
         }
   
         if (!rows || rows.length === 0) {
-          // username tidak ada
           return res.send("Username tidak ditemukan");
         }
   
         const user = rows[0];
+  
+        // kolom password di DB: password
         const hashed = user.password || "";
   
         let ok = false;
         try {
-          if (hashed && bcrypt.compareSync(password, hashed)) ok = true;
+          ok = hashed && bcrypt.compareSync(password, hashed);
         } catch (e) {
           console.error("bcrypt compare error:", e);
           ok = false;
         }
   
         if (!ok) {
-          return res.send("Login gagal! Periksa username dan password.");
+          return res.send("Password salah!");
         }
   
-        // sukses login → simpan user ke session
+        // simpan user ke session
         req.session.user = {
-          id: user.id_petugas || user.id,   // sesuaikan nama kolom kalau beda
-          username: user.Username,
-          level: user.level || null,
-          nama: user.nama_petugas || null,
+          id: user.id_petugas,
+          username: user.Username, 
+          nama: user.nama_petugas,
+          level: user.level,
         };
   
         return res.redirect("/dashboard");
       }
     );
   });
+  
 
 // Logout
 app.get("/logout", (req, res) => {
@@ -109,11 +111,11 @@ app.get("/dashboard", cekLogin, (req, res) => {
       const totalTunggakan = 0;
 
       res.render("dashboard", {
-        user: req.session.user || { username: "Admin" },
+        user: req.session.user, 
         totalSiswa,
         totalBayar,
         totalTunggakan,
-      });
+      });      
     });
   });
 });
