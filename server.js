@@ -301,6 +301,5 @@ app.get("/logout", (req, res) => {
 // ----------------------------------------------------------
 // 3. MENJALANKAN SERVER
 // ----------------------------------------------------------
-app.listen(process.env.PORT || 3000, () => {
-    console.log("Server berjalan...");
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server berjalan di port ${PORT}`));
