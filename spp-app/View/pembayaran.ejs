@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pembayaran SPP</title>
+  <link rel="stylesheet" href="/dashboard.css">
+  <link rel="stylesheet" href="/table.css">
+  <style>
+    .btn-primary {
+      background: #2e7d32;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+    }
+    .btn-sm {
+      padding: 6px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 13px;
+    }
+    .btn-delete {
+      background: #c62828;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+    .table-container {
+      background: #fff;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    }
+    .empty {
+      text-align: center;
+      color: #777;
+      padding: 20px 0;
+    }
+    form.inline {
+      display: inline;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h3>SPP Panel</h3>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/siswa">Data Siswa</a>
+    <a href="/spp">Data SPP</a>
+    <a href="/pembayaran">Pembayaran</a>
+    <a href="/logout" class="logout">Logout</a>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <header>
+      <h2>Pembayaran SPP</h2>
+      <p>Proses dan riwayat pembayaran SPP siswa</p>
+    </header>
+
+    <div class="box-action">
+      <a href="#tambah-form" class="btn-primary">+ Tambah Pembayaran</a>
+    </div>
+
+    <!-- FORM TAMBAH PEMBAYARAN -->
+    <div id="tambah-form" class="table-container" style="margin-bottom: 20px;">
+      <h3>Tambah Pembayaran Baru</h3>
+
+      <form action="/pembayaran/add" method="POST"
+            style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+
+        <!-- PILIH SISWA -->
+        <select name="id_siswa" required
+          style="flex: 1; min-width: 180px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+          <option value="">Pilih Siswa</option>
+          <% (siswa || []).forEach(s => { %>
+            <option value="<%= s.id %>">
+              <%= s.nis %> - <%= s.nama %>
+            </option>
+          <% }) %>
+        </select>
+
+        <!-- PILIH SPP -->
+        <select name="id_spp" required
+          style="flex: 1; min-width: 180px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+          <option value="">Pilih SPP</option>
+          <% (spp || []).forEach(sp => { %>
+            <option value="<%= sp.id_spp || sp.id %>">
+              <%= sp.tahun %> - Rp <%= Number(sp.nominal || 0).toLocaleString('id-ID') %>
+            </option>
+          <% }) %>
+        </select>
+
+        <!-- JUMLAH BAYAR -->
+        <input type="number" name="jumlah_bayar" placeholder="Jumlah bayar" required
+          style="flex: 1; min-width: 150px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+
+        <button type="submit"
+          style="padding: 8px 16px; background: #2e7d32; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+          Simpan
+        </button>
+      </form>
+    </div>
+
+    <!-- TABEL RIWAYAT PEMBAYARAN -->
+    <div class="table-container">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: #1976d2; color: #fff;">
+            <th style="padding: 10px; text-align: left;">No</th>
+            <th style="padding: 10px; text-align: left;">Siswa</th>
+            <th style="padding: 10px; text-align: left;">SPP</th>
+            <th style="padding: 10px; text-align: left;">Nominal SPP</th>
+            <th style="padding: 10px; text-align: left;">Jumlah Bayar</th>
+            <th style="padding: 10px; text-align: left;">Tanggal</th>
+            <th style="padding: 10px; text-align: left;">Aksi</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% if (!bayar || bayar.length === 0) { %>
+            <tr>
+              <td colspan="7" class="empty">Belum ada data pembayaran.</td>
+            </tr>
+          <% } else { %>
+            <% bayar.forEach((b, i) => { %>
+              <tr>
+                <td style="padding: 10px; border-top: 1px solid #eee;"><%= i + 1 %></td>
+
+                <td style="padding: 10px; border-top: 1px solid #eee;">
+                  <%= b.siswa_nis ? b.siswa_nis + ' - ' : '' %><%= b.siswa_nama || '-' %>
+                </td>
+
+                <td style="padding: 10px; border-top: 1px solid #eee;">
+                  <%= b.spp_tahun || '-' %>
+                </td>
+
+                <td style="padding: 10px; border-top: 1px solid #eee;">
+                  Rp <%= b.spp_nominal != null ? Number(b.spp_nominal).toLocaleString('id-ID') : '0' %>
+                </td>
+
+                <td style="padding: 10px; border-top: 1px solid #eee;">
+                  Rp <%= b.jumlah_bayar != null ? Number(b.jumlah_bayar).toLocaleString('id-ID') : '0' %>
+                </td>
+
+                <td style="padding: 10px; border-top: 1px solid #eee;">
+                  <% if (b.tgl_bayar) { %>
+                    <%= new Date(b.tgl_bayar).toISOString().slice(0,10) %>
+                  <% } else { %>
+                    -
+                  <% } %>
+                </td>
+
+                <td style="padding: 10px; border-top: 1px solid #eee;">
+                  <form
+                    class="inline"
+                    action="/pembayaran/delete/<%= b.id %>"
+                    method="POST"
+                    onsubmit="return confirm('Hapus data pembayaran ini?')"
+                  >
+                    <button type="submit" class="btn-delete">Hapus</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</body>
+</html>

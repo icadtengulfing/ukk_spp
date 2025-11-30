@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Edit Spp</title>
+    <link rel="stylesheet" href="/dashboard.css" />
+    <style>
+      .container {
+        max-width: 700px;
+        margin: 32px auto;
+        padding: 16px;
+        background: #fff;
+        border-radius: 8px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        margin: 8px 0;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+      }
+      button {
+        padding: 8px 14px;
+        border-radius: 6px;
+        background: #1976d2;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+      a {
+        color: #1976d2;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Edit SPP</h2>
+
+      <form action="/spp/edit/<%= spp.id_spp%>" method="POST">
+        <label>NIS</label>
+        <input type="text" name="tahun" value="<%= spp.tahun %>" required />
+
+        <label>Nama</label>
+        <input type="text" name="nominal" value="<%= spp.nominal %>" required />
+
+        <div style="display: flex; gap: 8px; margin-top: 12px">
+          <button type="submit">Simpan</button>
+          <a
+            href="/spp"
+            style="
+              display: inline-block;
+              padding: 8px 14px;
+              border-radius: 6px;
+              background: #eee;
+            "
+            >Batal</a
+          >
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

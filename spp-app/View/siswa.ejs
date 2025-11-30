@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Data Siswa</title>
+    <link rel="stylesheet" href="/dashboard.css" />
+    <link rel="stylesheet" href="/table.css" />
+    <style>
+      /* tombol kecil */
+      .btn-primary {
+        background: #2e7d32;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+      }
+      .btn-sm {
+        padding: 6px 10px;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn-edit {
+        background: #1976d2;
+        color: #fff;
+      }
+      .btn-delete {
+        background: #c62828;
+        color: #fff;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .table-container {
+        background: #fff;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      }
+      .empty {
+        text-align: center;
+        color: #777;
+        padding: 20px 0;
+      }
+      form.inline {
+        display: inline;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h3>SPP Panel</h3>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/siswa">Data Siswa</a>
+      <a href="/spp">Data SPP</a>
+      <a href="/pembayaran">Pembayaran</a>
+      <a href="/logout" class="logout">Logout</a>
+    </div>
+
+    <div class="main">
+      <header>
+        <h2>Data Siswa</h2>
+        <p>Kelola data siswa dengan mudah & cepat</p>
+      </header>
+
+      <div class="box-action">
+        <a href="#tambah-form" class="btn-primary">+ Tambah Siswa</a>
+      </div>
+
+      <!-- FORM TAMBAH -->
+<div id="tambah-form" class="table-container" style="margin-bottom: 20px">
+  <h3>Tambah Siswa Baru</h3>
+
+  <form action="/siswa/add" method="POST" style="display: flex; gap: 10px; flex-wrap: wrap">
+    
+    <input type="text" name="nis" placeholder="NIS" required
+      style="flex: 1; min-width: 150px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;" />
+
+    <input type="text" name="nama" placeholder="Nama" required
+      style="flex: 1; min-width: 150px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;" />
+
+    <select name="kelas" required
+      style="flex:1; min-width:150px; padding:8px; border:1px solid #ddd; border-radius:6px;">
+
+      <option value="" style="font-weight:bold; color:#555;">Pilih Kelas</option>
+
+      <!-- RPL -->
+      <option value="X RPL">X RPL</option><option value="XI RPL">XI RPL</option><option value="XII RPL">XII RPL</option>
+      <!-- TKJ -->
+      <option value="X TKJ">X TKJ</option><option value="XI TKJ">XI TKJ</option><option value="XII TKJ">XII TKJ</option>
+      <!-- DKV -->
+      <option value="X DKV">X DKV</option><option value="XI DKV">XI DKV</option><option value="XII DKV">XII DKV</option>
+      <!-- ANM -->
+      <option value="X ANM">X ANM</option><option value="XI ANM">XI ANM</option><option value="XII ANM">XII ANM</option>
+      <!-- GD -->
+      <option value="X GD">X GD</option><option value="XI GD">XI GD</option><option value="XII GD">XII GD</option>
+      <!-- BC -->
+      <option value="X BC">X BC</option><option value="XI BC">XI BC</option><option value="XII BC">XII BC</option>
+    </select>
+
+    <input type="text" name="alamat" placeholder="Alamat (opsional)"
+      style="flex: 1 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;" />
+
+    <button type="submit"
+      style="padding: 8px 16px; background: #2e7d32; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+      Simpan
+    </button>
+
+  </form>
+</div>
+
+
+      <!-- TABEL DATA -->
+      <div class="table-container">
+        <table style="width: 100%; border-collapse: collapse">
+          <thead>
+            <tr>
+              <th style="padding: 10px; text-align: left">No</th>
+              <th style="padding: 10px; text-align: left">NIS</th>
+              <th style="padding: 10px; text-align: left">Nama</th>
+              <th style="padding: 10px; text-align: left">Kelas</th>
+              <th style="padding: 10px; text-align: left">Alamat</th>
+              <th style="padding: 10px; text-align: left">Aksi</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% if (!data || data.length === 0) { %>
+            <tr>
+              <td colspan="6" class="empty">Tidak ada data siswa.</td>
+            </tr>
+            <% } else { %> <% data.forEach((s, i) => { %>
+            <tr>
+              <td style="padding: 10px; border-top: 1px solid #eee">
+                <%= i + 1 %>
+              </td>
+              <td style="padding: 10px; border-top: 1px solid #eee">
+                <%= s.nis || '' %>
+              </td>
+              <td style="padding: 10px; border-top: 1px solid #eee">
+                <%= s.nama || '' %>
+              </td>
+              <td style="padding: 10px; border-top: 1px solid #eee">
+                <%= s.kelas || '' %>
+              </td>
+              <td style="padding: 10px; border-top: 1px solid #eee">
+                <%= s.alamat || '-' %>  
+              </td>
+              <td style="padding: 10px; border-top: 1px solid #eee">
+                <div class="actions">
+                  <a href="/siswa/edit/<%= s.id %>" class="btn-sm btn-edit">Edit</a>
+                  <form
+                    class="inline"
+                    action="/siswa/delete/<%= s.id %>"
+                    method="POST"
+                    onsubmit="return confirm('Hapus siswa ini?')"
+                  >
+                    <button type="submit" class="btn-delete">Hapus</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            <% }) %> <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
