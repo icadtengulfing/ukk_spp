@@ -259,7 +259,7 @@ app.get("/spp/edit/:id_spp", (req, res) => {
       }
       res.redirect("/spp");
     });
-  });
+  });   
 
 // Tambah Pembayaran
 app.post("/pembayaran/add", (req, res) => {
@@ -301,6 +301,6 @@ app.get("/logout", (req, res) => {
 // ----------------------------------------------------------
 // 3. MENJALANKAN SERVER
 // ----------------------------------------------------------
-app.listen(3000, () =>
-  console.log("Server berjalan di http://localhost:3000")
-);
+app.listen(process.env.PORT || 3000, () => {
+    console.log("Server berjalan...");
+});

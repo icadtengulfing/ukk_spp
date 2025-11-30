@@ -185,16 +185,6 @@ app.post("/siswa/edit/:id", cekLogin, (req, res) => {
   );
 });
 
-// Delete siswa
-app.post("/siswa/delete/:id", cekLogin, (req, res) => {
-  const id = req.params.id;
-  db.query("DELETE FROM siswa WHERE id = ?", [id], (err) => {
-    if (err) {
-      console.error("Delete siswa error:", err);
-    }
-    res.redirect("/siswa");
-  });
-});
 
 // --------------------
 // CRUD SPP
