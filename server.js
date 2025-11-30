@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 const db = require("./spp-app/database");
 const session = require("express-session");
-
+const bcrypt = require("bcryptjs");  
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
@@ -32,17 +32,55 @@ app.get("/", (req, res) => {
   res.render("login");
 });
 
-// Login (masih dummy, cuma cek isi)
+// Login pakai tabel petugas
 app.post("/login", (req, res) => {
-  const { username, password } = req.body;
-
-  if (username && password) {
-    req.session.user = { username };
-    return res.redirect("/dashboard");
-  }
-
-  res.redirect("/");
-});
+    const { username, password } = req.body;
+  
+    if (!username || !password) {
+      return res.redirect("/");
+    }
+  
+    db.query(
+      "SELECT * FROM petugas WHERE username = ?",
+      [username],
+      (err, rows) => {
+        if (err) {
+          console.error("DB error during login:", err);
+          return res.status(500).send("Terjadi kesalahan pada server (DB).");
+        }
+  
+        if (!rows || rows.length === 0) {
+          // username tidak ada
+          return res.send("Username tidak ditemukan");
+        }
+  
+        const user = rows[0];
+        const hashed = user.password || "";
+  
+        let ok = false;
+        try {
+          if (hashed && bcrypt.compareSync(password, hashed)) ok = true;
+        } catch (e) {
+          console.error("bcrypt compare error:", e);
+          ok = false;
+        }
+  
+        if (!ok) {
+          return res.send("Login gagal! Periksa username dan password.");
+        }
+  
+        // sukses login → simpan user ke session
+        req.session.user = {
+          id: user.id_petugas || user.id,   // sesuaikan nama kolom kalau beda
+          username: user.username,
+          level: user.level || null,
+          nama: user.nama_petugas || null,
+        };
+  
+        return res.redirect("/dashboard");
+      }
+    );
+  });
 
 // Logout
 app.get("/logout", (req, res) => {
