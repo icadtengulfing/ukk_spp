@@ -34,15 +34,15 @@ app.get("/", (req, res) => {
 
 // Login pakai tabel petugas
 app.post("/login", (req, res) => {
-    const { username, password } = req.body;
+    const { Username, password } = req.body;
   
-    if (!username || !password) {
+    if (!Username || !password) {
       return res.redirect("/");
     }
   
     db.query(
-      "SELECT * FROM petugas WHERE username = ?",
-      [username],
+      "SELECT * FROM petugas WHERE Username = ?",
+      [Username],
       (err, rows) => {
         if (err) {
           console.error("DB error during login:", err);
@@ -72,7 +72,7 @@ app.post("/login", (req, res) => {
         // sukses login → simpan user ke session
         req.session.user = {
           id: user.id_petugas || user.id,   // sesuaikan nama kolom kalau beda
-          username: user.username,
+          username: user.Username,
           level: user.level || null,
           nama: user.nama_petugas || null,
         };
