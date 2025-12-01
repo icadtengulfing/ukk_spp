@@ -119,10 +119,9 @@ app.get("/dashboard", cekLogin, (req, res) => {
     });
   });
 });
-
-// List siswa
+//Siswa
 app.get("/siswa", cekLogin, (req, res) => {
-  db.query("SELECT id, nis, nama, kelas, alamat FROM siswa", (err, results) => {
+  db.query("SELECT * FROM siswa", (err, results) => {
     if (err) {
       console.error("Query siswa error:", err);
       return res.render("siswa", { data: [] });
