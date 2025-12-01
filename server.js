@@ -130,23 +130,32 @@ app.get("/siswa", cekLogin, (req, res) => {
   });
 });
 
-// Tambah Siswa
+// Tambah Siswa (versi debug)
 app.post("/siswa/add", cekLogin, (req, res) => {
   const { nis, nama, kelas, alamat } = req.body;
 
-  if (!nis || !nama || !kelas || !alamat) {
-    return res.send("Data siswa tidak lengkap!");
+  console.log("BODY SISWA ADD:", req.body);
+
+  if (!nis || !nama || !kelas) {
+    return res.status(400).send("Data siswa tidak lengkap (nis/nama/kelas)!");
   }
 
+  const alamatFix = alamat || ""; // beneran opsional
+
   const sql = `INSERT INTO siswa (nis, nama, kelas, alamat) VALUES (?,?,?,?)`;
-  db.query(sql, [nis, nama, kelas, alamat], (err) => {
+  db.query(sql, [nis, nama, kelas, alamatFix], (err, result) => {
     if (err) {
       console.error("Insert siswa error:", err);
-      return res.redirect("/siswa");
+      // sementara tampilkan error ke browser biar kelihatan
+      return res
+        .status(500)
+        .send("Insert siswa error:<br><pre>" + (err.sqlMessage || err) + "</pre>");
     }
+    console.log("Insert siswa OK, insertId:", result.insertId);
     res.redirect("/siswa");
   });
 });
+
 
 // Form edit siswa
 app.get("/siswa/edit/:id", cekLogin, (req, res) => {
