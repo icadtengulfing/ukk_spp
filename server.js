@@ -32,7 +32,6 @@ app.get("/", (req, res) => {
   res.render("login");
 });
 
-/// LOGIN pakai tabel petugas (password sudah hash bcrypt)
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
   
